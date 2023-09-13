@@ -1024,7 +1024,7 @@ export default class LoginSession extends TypedEmitter<LoginSessionEvents> {
   static error = 'error';
 
   async getCookies(): Promise<any[]> {
-
+    await this.getWebCookies();
     let cookies: { [name: string]: any } = {}
     this._webClient.cookieJar.cookies.map(e => {
       let cookie = cookies[e.domain]
