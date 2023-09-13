@@ -21,7 +21,7 @@ async function main() {
   // let steamGuardMachineToken = await promptAsync('Machine Token: ');
 
   // Create our LoginSession and start a login session using our credentials. This session will be for a client login.
-  let session = new LoginSession(EAuthTokenPlatformType.SteamClient,{httpProxy: 'http://bmbxcqqo:9gfg86g3mmf0@38.153.147.14:6774'});
+  let session = new LoginSession(EAuthTokenPlatformType.SteamClient,{});
   let startResult = await session.startWithCredentials({
     accountName,
     password,
