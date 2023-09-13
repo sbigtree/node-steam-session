@@ -1023,8 +1023,19 @@ export default class LoginSession extends TypedEmitter<LoginSessionEvents> {
    */
   static error = 'error';
 
-  async getCookies(): Promise<any[]> {
-    await this.getWebCookies();
+  async getCookies(): Promise<any[] | { [name: string]: string }> {
+
+    let ck = await this.getWebCookies();
+    if ([EAuthTokenPlatformType.SteamClient, EAuthTokenPlatformType.MobileApp].includes(this._platformType)) {
+      return ck.reduce((a, b) => {
+        let kv = b.split('=')
+        a[kv[0]] = kv[1]
+        return a
+        // this._webClient.cookieJar.add(c,'login.steampowered.com')
+        // this._webClient.cookieJar.add(c,'steamcommunity.com')
+        // this._webClient.cookieJar.add(c,'store.steampowered.com')
+      }, {})
+    }
     let cookies: { [name: string]: any } = {}
     this._webClient.cookieJar.cookies.map(e => {
       let cookie = cookies[e.domain]
@@ -1039,6 +1050,10 @@ export default class LoginSession extends TypedEmitter<LoginSessionEvents> {
       let cookie = cookies[domain]
       if (!cookie) {
         let login_cookie = cookies['login.steampowered.com']
+        if (!login_cookie) {
+          return resolve({})
+
+        }
         let cookieJar = new CookieJar()
         Object.keys(login_cookie).map(k => {
           cookieJar.add(new Cookie({
