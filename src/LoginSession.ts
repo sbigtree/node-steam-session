@@ -813,9 +813,8 @@ export default class LoginSession extends TypedEmitter<LoginSessionEvents> {
       if (!this.accessToken) {
         await this.refreshAccessToken();
       }
-
-      let cookieValue = encodeURIComponent([this.steamID.getSteamID64(), this.accessToken].join('||'));
-      return [`steamLoginSecure=${cookieValue}`, `sessionid=${sessionId}`];
+      // let cookieValue = encodeURIComponent([this.steamID.getSteamID64(), this.accessToken].join('||'));
+      // return [`steamLoginSecure=${cookieValue}`, `sessionid=${sessionId}`];
     }
 
     let body = {
@@ -1026,16 +1025,13 @@ export default class LoginSession extends TypedEmitter<LoginSessionEvents> {
   async getCookies(): Promise<any[] | { [name: string]: string }> {
 
     let ck = await this.getWebCookies();
-    if ([EAuthTokenPlatformType.SteamClient, EAuthTokenPlatformType.MobileApp].includes(this._platformType)) {
-      return ck.reduce((a, b) => {
-        let kv = b.split('=')
-        a[kv[0]] = kv[1]
-        return a
-        // this._webClient.cookieJar.add(c,'login.steampowered.com')
-        // this._webClient.cookieJar.add(c,'steamcommunity.com')
-        // this._webClient.cookieJar.add(c,'store.steampowered.com')
-      }, {})
-    }
+    // if ([EAuthTokenPlatformType.SteamClient, EAuthTokenPlatformType.MobileApp].includes(this._platformType)) {
+    //   return ck.reduce((a, b) => {
+    //     let kv = b.split('=')
+    //     a[kv[0]] = kv[1]
+    //     return a
+    //   }, {})
+    // }
     let cookies: { [name: string]: any } = {}
     this._webClient.cookieJar.cookies.map(e => {
       let cookie = cookies[e.domain]
