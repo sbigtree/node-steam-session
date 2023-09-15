@@ -139,6 +139,10 @@ export default class LoginSession extends TypedEmitter<LoginSessionEvents> {
     this.loginTimeout = 30000;
   }
 
+  get handler() {
+    return this._handler
+  }
+
   /**
    * A `number` specifying the time, in milliseconds, before a login attempt will {@link timeout}. The timer begins
    * after {@link polling} begins.

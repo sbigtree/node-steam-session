@@ -23,7 +23,7 @@ async function main() {
   // await session.refreshAccessToken();
   // console.log(`New access token: ${session.accessToken}`);
   webCookies = await session.getWebCookies()
-  webCookies = await session.getCookies()
+  // webCookies = await session.getCookies()
   console.log('webCookies',webCookies)
   // @ts-ignore
   let {headers} = getDataForPlatformType(session._platformType);
