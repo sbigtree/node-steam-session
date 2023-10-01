@@ -294,7 +294,7 @@ export default class AuthenticationClient extends EventEmitter {
     };
   }
 
-  async sendRequest(request: RequestDefinition): Promise<any> {
+  async   sendRequest(request: RequestDefinition): Promise<any> {
     // If a transport close is pending, cancel it
     clearTimeout(this._transportCloseTimeout);
 
