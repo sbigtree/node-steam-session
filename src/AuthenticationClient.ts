@@ -50,6 +50,8 @@ interface RequestDefinition {
   apiVersion: number;
   data: any;
   accessToken?: string;
+  requestDefinitionName?: string;
+  responseDefinitionName?: string;
 }
 
 export default class AuthenticationClient extends EventEmitter {
@@ -294,13 +296,16 @@ export default class AuthenticationClient extends EventEmitter {
     };
   }
 
-  async   sendRequest(request: RequestDefinition): Promise<any> {
+  async sendRequest(request: RequestDefinition): Promise<any> {
     // If a transport close is pending, cancel it
     clearTimeout(this._transportCloseTimeout);
 
     // Right now we really only support IAuthenticationService
 
-    let {request: requestProto, response: responseProto} = getProtoForMethod(request.apiInterface, request.apiMethod);
+    let {
+      request: requestProto,
+      response: responseProto
+    } = getProtoForMethod(request.apiInterface, request.apiMethod, request.requestDefinitionName, request.responseDefinitionName);
     if (!requestProto || !responseProto) {
       throw new Error(`Unknown API method ${request.apiInterface}/${request.apiMethod}`);
     }

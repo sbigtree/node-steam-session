@@ -10,10 +10,10 @@ const path = require('path')
 // console.log(proto)
 
 
-// let data = 'CQ3EFFwBABABIAEqJDJGN0Q2RjNGLTlBOUQtNDg2Ni05RkJGLUM5NEYxNkVBRDVCNzIBMUAC='
-// let proto = Protos['CTwoFactor_AddAuthenticator_Request']
-// let de = proto.decode(Buffer.from(data,'base64'))
-// console.log(de)
+let data = 'CfvbBVwBABABIAEqJDJGN0Q2RjNGLTlBOUQtNDg2Ni05RkJGLUM5NEYxNkVBRDVCNzIBMUAC'
+let proto = Protos['CTwoFactor_AddAuthenticator_Request']
+let de = proto.decode(Buffer.from(data,'base64'))
+console.log(de)
 
 
 // let data = 'Cg4rODYxNTY3ODg4MDUyMRICQ04='
@@ -66,17 +66,17 @@ const path = require('path')
 // })
 // console.log(de)
 
-const buffer = fs.readFileSync(path.join(__dirname, 'FinalizeAddAuthenticator'),)
-
-let proto = Protos['CTwoFactor_FinalizeAddAuthenticator_Response']
-let de = proto.decode(buffer)
-de = JSON.stringify(de, (key, value) => {
-  if (value.type == 'Buffer') {
-    return Buffer.from(value.data,).toString('base64')
-  }
-  return value;
-})
-console.log(de)
+// const buffer = fs.readFileSync(path.join(__dirname, 'FinalizeAddAuthenticator'),)
+//
+// let proto = Protos['CTwoFactor_FinalizeAddAuthenticator_Response']
+// let de = proto.decode(buffer)
+// de = JSON.stringify(de, (key, value) => {
+//   if (value.type == 'Buffer') {
+//     return Buffer.from(value.data,).toString('base64')
+//   }
+//   return value;
+// })
+// console.log(de)
 
 // let proto = Protos['CPhone_IsAccountWaitingForEmailConfirmation_Response']
 // let de = proto.decode(buffer)

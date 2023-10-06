@@ -12,16 +12,19 @@ main();
 
 async function main() {
   // Prompt for credentials from the console
-  let accountName = await promptAsync('Username: ');
-  let password = await promptAsync('Password: ', true);
-  // let accountName = '9110763361'
-  // let password = '1999.521'
+  // let accountName = await promptAsync('Username: ');
+  // let password = await promptAsync('Password: ', true);
+  let accountName = '9110763361'
+  let password = '1999.521'
 
   console.log('\nIf you\'re logging into an account using email Steam Guard and you have a machine token, enter it below. Otherwise, just hit enter.');
   // let steamGuardMachineToken = await promptAsync('Machine Token: ');
 
   // Create our LoginSession and start a login session using our credentials. This session will be for a client login.
-  let session = new LoginSession(EAuthTokenPlatformType.SteamClient,{});
+  let session = new LoginSession(EAuthTokenPlatformType.MobileApp, {
+    // httpProxy: 'http://treetree-zone-resi-session-eccb964f8935-sessTime-30-0:treetree@pr-us.ip2world.com:6001'
+    httpProxy: 'http://treetree-zone-resi-session-dde1238dcf3e-sessTime-30-0:treetree@pr-us.ip2world.com:6001'
+  });
   let startResult = await session.startWithCredentials({
     accountName,
     password,
@@ -97,11 +100,11 @@ async function main() {
     //@ts-ignore
     let {headers} = getDataForPlatformType(session._platformType);
     headers.cookie = webCookies.join(';')
-   //@ts-ignore
-    let finalizeResponse = await session._webClient.postEncoded('https://store.steampowered.com/account/ajaxredeemwalletcode/', body, 'multipart', {
-      headers: headers
-    });
-    console.log(finalizeResponse)
+    //@ts-ignore
+    //  let finalizeResponse = await session._webClient.postEncoded('https://store.steampowered.com/account/ajaxredeemwalletcode/', body, 'multipart', {
+    //    headers: headers
+    //  });
+    //  console.log(finalizeResponse)
 
   });
 
