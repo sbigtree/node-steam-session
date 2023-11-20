@@ -587,8 +587,7 @@ export default class LoginSession extends EventEmitter {
     if (!this.refreshToken) {
       throw new Error('A refresh token is required to get a new access token');
     }
-
-    this.accessToken = await this._handler.generateAccessTokenForApp(this.refreshToken);
+    this.accessToken = (await this._handler.generateAccessTokenForApp(this.refreshToken)).accessToken;
   }
 
   async getCookies(): Promise<any[]> {
@@ -626,7 +625,7 @@ export default class LoginSession extends EventEmitter {
           multipartForm: HttpClient.simpleObjectToMultipartForm({
             redir: `https://${domain}/`
           })
-        }).catch((err)=>{
+        }).catch((err) => {
           reject(err)
         })
         let cookie = {}
@@ -637,7 +636,7 @@ export default class LoginSession extends EventEmitter {
         cookies[domain] = cookie
         // console.log('cookie:', cookie)
         resolve(cookie)
-      }else {
+      } else {
         resolve({})
       }
     })))
