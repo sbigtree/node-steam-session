@@ -45,6 +45,7 @@ import {clearTimeout} from 'timers';
 const debug = createDebug('steam-session:AuthenticationClient');
 
 interface RequestDefinition {
+  method?: string;
   apiInterface: string;
   apiMethod: string;
   apiVersion: number;
@@ -314,6 +315,7 @@ export default class AuthenticationClient extends EventEmitter {
     this.emit('debug', request.apiMethod, request.data, headers);
 
     let result: ApiResponse = await this._transport.sendRequest({
+      method: request.method,
       apiInterface: request.apiInterface,
       apiMethod: request.apiMethod,
       apiVersion: request.apiVersion,
