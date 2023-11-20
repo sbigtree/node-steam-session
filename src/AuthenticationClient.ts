@@ -329,9 +329,14 @@ export default class AuthenticationClient extends EventEmitter {
     }
 
     // We need to decode the response data, if there was any
-    let responseData = result.responseData && result.responseData.length > 0 ? result.responseData : Buffer.alloc(0);
-    let decodedData = responseProto.decode(responseData);
-    return responseProto.toObject(decodedData, {longs: String});
+    if (result.responseData instanceof Buffer) {
+
+      let responseData = result.responseData && result.responseData.length > 0 ? result.responseData : Buffer.alloc(0);
+      let decodedData = responseProto.decode(responseData);
+      return responseProto.toObject(decodedData, {longs: String});
+    } else {
+      return result.responseData
+    }
   }
 
   close(): void {
