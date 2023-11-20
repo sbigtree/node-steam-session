@@ -79,7 +79,7 @@ async function main() {
     console.log('\nReceived new Steam Guard machine token');
     console.log(`Machine Token: ${session.steamGuardMachineToken}`);
   });
-
+  // scung78636  njrw44471Z
   session.on('authenticated', async () => {
     abortPrompt();
 

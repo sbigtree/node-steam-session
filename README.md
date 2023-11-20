@@ -1,5 +1,4 @@
 # Steam Session Manager
-
 [![npm version](https://img.shields.io/npm/v/steam-session.svg)](https://npmjs.com/package/steam-session)
 [![npm downloads](https://img.shields.io/npm/dm/steam-session.svg)](https://npmjs.com/package/steam-session)
 [![license](https://img.shields.io/npm/l/steam-session.svg)](https://github.com/DoctorMcKay/node-steam-session/blob/master/LICENSE)

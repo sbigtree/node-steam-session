@@ -10,10 +10,10 @@ const path = require('path')
 // console.log(proto)
 
 
-let data = 'CfvbBVwBABABIAEqJDJGN0Q2RjNGLTlBOUQtNDg2Ni05RkJGLUM5NEYxNkVBRDVCNzIBMUAC'
-let proto = Protos['CTwoFactor_AddAuthenticator_Request']
-let de = proto.decode(Buffer.from(data,'base64'))
-console.log(de)
+// let data = 'CfvbBVwBABABIAEqJDJGN0Q2RjNGLTlBOUQtNDg2Ni05RkJGLUM5NEYxNkVBRDVCNzIBMUAC'
+// let proto = Protos['CTwoFactor_AddAuthenticator_Request']
+// let de = proto.decode(Buffer.from(data,'base64'))
+// console.log(de)
 
 
 // let data = 'Cg4rODYxNTY3ODg4MDUyMRICQ04='
@@ -87,3 +87,17 @@ console.log(de)
 //   return value;
 // })
 // console.log(de)
+
+// 点数赠送
+// let data = 'CAMQ+uOJi5SAgIgBGAE='
+// let proto = Protos['CLoyaltyRewards_AddReaction_Request']
+// let de = proto.decode(Buffer.from(data,'base64'))
+// console.log(de)
+// console.log(de.targetid.toString())
+
+// 点数商店获取
+let data = 'CAMQ+uOJi5SAgIgB'
+let proto = Protos['CLoyaltyRewards_GetReactions_Request']
+let de = proto.decode(Buffer.from(data,'base64'))
+console.log(de)
+console.log(de.targetid.toString())
