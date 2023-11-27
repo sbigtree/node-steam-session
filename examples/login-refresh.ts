@@ -2,3 +2,7 @@ import {EAuthTokenPlatformType, LoginSession} from "../src";
 
 let session = new LoginSession(EAuthTokenPlatformType.SteamClient, {httpProxy: null});
 session.refreshToken = 'eyAidHlwIjogIkpXVCIsICJhbGciOiAiRWREU0EiIH0.eyAiaXNzIjogInN0ZWFtIiwgInN1YiI6ICI3NjU2MTE5OTQ4MDU4OTE5MyIsICJhdWQiOiBbICJjbGllbnQiLCAid2ViIiwgInJlbmV3IiwgImRlcml2ZSIgXSwgImV4cCI6IDE3MDU4MDE2ODcsICJuYmYiOiAxNjc4Nzg4NDU5LCAiaWF0IjogMTY4NzQyODQ1OSwgImp0aSI6ICIwRDE4XzIyQkJDQUQxX0ZEMEM5IiwgIm9hdCI6IDE2ODc0Mjg0NTksICJwZXIiOiAxLCAiaXBfc3ViamVjdCI6ICIzOC4xNTMuMTQ3LjE0IiwgImlwX2NvbmZpcm1lciI6ICIzOC4xNTMuMTQ3LjE0IiB9.TTSp49gpOFg5laGtM1AjbW_UOrOlL3Kjh-iHPkatAJF_1pb48nhZ6nQPKJGTheSAe4NRndYOGLliCrz_F67CBQ'
+
+session.refreshAccessToken().then(data=>{
+  console.log(data)
+})

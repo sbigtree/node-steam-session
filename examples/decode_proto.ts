@@ -89,15 +89,21 @@ const path = require('path')
 // console.log(de)
 
 // 点数赠送
-// let data = 'CAMQ+uOJi5SAgIgBGAE='
-// let proto = Protos['CLoyaltyRewards_AddReaction_Request']
-// let de = proto.decode(Buffer.from(data,'base64'))
-// console.log(de)
+let data = 'CAMQ+uOJi5SAgIgBGAE='
+let proto = Protos['CLoyaltyRewards_AddReaction_Request']
+let de = proto.decode(Buffer.from(data,'base64'))
+de.targetid = de.targetid.toString()
+// {
+//   target_type: 3,
+//   targetid: '76561199057236474',
+//   reactionid: 1
+// }
+console.log(de)
 // console.log(de.targetid.toString())
 
 // 点数商店获取
-let data = 'CAMQ+uOJi5SAgIgB'
-let proto = Protos['CLoyaltyRewards_GetReactions_Request']
-let de = proto.decode(Buffer.from(data,'base64'))
-console.log(de)
-console.log(de.targetid.toString())
+// let data = 'CAMQ+uOJi5SAgIgB'
+// let proto = Protos['CLoyaltyRewards_GetReactions_Request']
+// let de = proto.decode(Buffer.from(data,'base64'))
+// console.log(de)
+// console.log(de.targetid.toString())

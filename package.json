@@ -36,7 +36,7 @@
 	"dependencies": {
 		"@doctormckay/stdlib": "^2.4.1",
 		"debug": "^4.3.4",
-		"kvparser": "^1.0.1",
+		"kvparser": "^1.0.2",
 		"node-bignumber": "^1.2.2",
 		"protobufjs": "^7.1.0",
 		"socks-proxy-agent": "^7.0.0",

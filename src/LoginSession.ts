@@ -605,40 +605,44 @@ export default class LoginSession extends EventEmitter {
       let cookie = cookies[domain]
       if (!cookie) {
         let login_cookie = cookies['login.steampowered.com']
-        let cookieJar = new CookieJar()
-        Object.keys(login_cookie).map(k => {
-          cookieJar.add(new Cookie({
-            expires: undefined,
-            secure: false,
-            domain: 'login.steampowered.com',
-            name: k,
-            content: login_cookie[k],
-            path: '/'
-          },), 'login.steampowered.com')
-        })
-        // console.log('cookieJar',cookieJar.cookies)
-        let webClient = new HttpClient({httpsAgent: this.agent, cookieJar: cookieJar});
-        let result = await webClient.request({
-          url: 'https://login.steampowered.com/jwt/refresh',
-          method: 'post',
-          followRedirects: true,
-          multipartForm: HttpClient.simpleObjectToMultipartForm({
-            redir: `https://${domain}/`
+        if (login_cookie) {
+
+          let cookieJar = new CookieJar()
+          Object.keys(login_cookie).map(k => {
+            cookieJar.add(new Cookie({
+              expires: undefined,
+              secure: false,
+              domain: 'login.steampowered.com',
+              name: k,
+              content: login_cookie[k],
+              path: '/'
+            },), 'login.steampowered.com')
           })
-        }).catch((err) => {
-          reject(err)
-        })
-        let cookie = {}
-        webClient.cookieJar.cookies.map(e => {
-          cookie[e.name] = e.content
-        })
-        delete cookie['steamRefresh_steam']
-        cookies[domain] = cookie
-        // console.log('cookie:', cookie)
-        resolve(cookie)
-      } else {
-        resolve({})
+          // console.log('cookieJar',cookieJar.cookies)
+          let webClient = new HttpClient({httpsAgent: this.agent, cookieJar: cookieJar});
+          let result = await webClient.request({
+            url: 'https://login.steampowered.com/jwt/refresh',
+            method: 'post',
+            followRedirects: true,
+            multipartForm: HttpClient.simpleObjectToMultipartForm({
+              redir: `https://${domain}/`
+            })
+          }).catch((err) => {
+            reject(err)
+          })
+          let cookie = {}
+          webClient.cookieJar.cookies.map(e => {
+            cookie[e.name] = e.content
+          })
+          delete cookie['steamRefresh_steam']
+          cookies[domain] = cookie
+          // console.log('cookie:', cookie)
+          resolve(cookie)
+        } else {
+          resolve({})
+        }
       }
+
     })))
     // console.log('result', result)
 
