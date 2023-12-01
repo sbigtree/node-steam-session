@@ -641,6 +641,8 @@ export default class LoginSession extends EventEmitter {
         } else {
           resolve({})
         }
+      }else{
+        resolve({})
       }
 
     })))
