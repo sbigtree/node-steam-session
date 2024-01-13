@@ -3,3 +3,4 @@ dist/
 dev/
 examples/login-to-web-with-2fa-test.ts
 .idea/
+.DS_Store
