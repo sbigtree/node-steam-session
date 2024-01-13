@@ -31,6 +31,9 @@ export default class WebApiTransport implements ITransport {
 		let urlPath = `I${request.apiInterface}Service/${request.apiMethod}/v${request.apiVersion}`;
 		let url = `${WEBAPI_BASE}/${urlPath}/`;
 		let method = GET_REQUESTS.includes(urlPath) ? 'GET' : 'POST';
+		if(request.method){
+			method = request.method.toUpperCase()
+		}
 		let headers = {...API_HEADERS, ...(request.headers || {})};
 
 		let queryString:any = {};

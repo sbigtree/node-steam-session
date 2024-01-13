@@ -45,11 +45,14 @@ import {clearTimeout} from 'timers';
 const debug = createDebug('steam-session:AuthenticationClient');
 
 interface RequestDefinition {
+  method?: string;
   apiInterface: string;
   apiMethod: string;
   apiVersion: number;
   data: any;
   accessToken?: string;
+  requestDefinitionName?: string;
+  responseDefinitionName?: string;
 }
 
 export default class AuthenticationClient extends EventEmitter {
@@ -300,7 +303,10 @@ export default class AuthenticationClient extends EventEmitter {
 
     // Right now we really only support IAuthenticationService
 
-    let {request: requestProto, response: responseProto} = getProtoForMethod(request.apiInterface, request.apiMethod);
+    let {
+      request: requestProto,
+      response: responseProto
+    } = getProtoForMethod(request.apiInterface, request.apiMethod, request.requestDefinitionName, request.responseDefinitionName);
     if (!requestProto || !responseProto) {
       throw new Error(`Unknown API method ${request.apiInterface}/${request.apiMethod}`);
     }
@@ -309,6 +315,7 @@ export default class AuthenticationClient extends EventEmitter {
     this.emit('debug', request.apiMethod, request.data, headers);
 
     let result: ApiResponse = await this._transport.sendRequest({
+      method: request.method,
       apiInterface: request.apiInterface,
       apiMethod: request.apiMethod,
       apiVersion: request.apiVersion,
@@ -322,9 +329,14 @@ export default class AuthenticationClient extends EventEmitter {
     }
 
     // We need to decode the response data, if there was any
-    let responseData = result.responseData && result.responseData.length > 0 ? result.responseData : Buffer.alloc(0);
-    let decodedData = responseProto.decode(responseData);
-    return responseProto.toObject(decodedData, {longs: String});
+    if (result.responseData instanceof Buffer) {
+
+      let responseData = result.responseData && result.responseData.length > 0 ? result.responseData : Buffer.alloc(0);
+      let decodedData = responseProto.decode(responseData);
+      return responseProto.toObject(decodedData, {longs: String});
+    } else {
+      return result.responseData
+    }
   }
 
   close(): void {

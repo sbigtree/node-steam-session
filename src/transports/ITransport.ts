@@ -10,6 +10,7 @@ export interface ApiRequest {
     accessToken?: string;
     requestData?: any;
     headers?: any;
+    method?: string;
 }
 
 /**
