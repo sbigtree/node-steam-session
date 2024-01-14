@@ -89,16 +89,16 @@ const path = require('path')
 // console.log(de)
 
 // 点数赠送
-let data = 'CAMQ+uOJi5SAgIgBGAE='
-let proto = Protos['CLoyaltyRewards_AddReaction_Request']
-let de = proto.decode(Buffer.from(data,'base64'))
-de.targetid = de.targetid.toString()
+// let data = 'CAMQ+uOJi5SAgIgBGAE='
+// let proto = Protos['CLoyaltyRewards_AddReaction_Request']
+// let de = proto.decode(Buffer.from(data,'base64'))
+// de.targetid = de.targetid.toString()
 // {
 //   target_type: 3,
 //   targetid: '76561199057236474',
 //   reactionid: 1
 // }
-console.log(de)
+// console.log(de)
 // console.log(de.targetid.toString())
 
 // 点数商店获取
@@ -107,3 +107,11 @@ console.log(de)
 // let de = proto.decode(Buffer.from(data,'base64'))
 // console.log(de)
 // console.log(de.targetid.toString())
+
+
+// 获取我的APP列表
+let data = 'CgVnYW1lcxIEbm9uZRjYxJmjvZaPoTUgAQ=='
+let proto = Protos['CMsgClientGetClientAppList']
+let de = proto.decode(Buffer.from(data,'base64'))
+console.log(de)
+console.log(de.targetid.toString())
