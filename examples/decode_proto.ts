@@ -111,7 +111,6 @@ const path = require('path')
 
 // 获取我的APP列表
 let data = 'CgVnYW1lcxIEbm9uZRjYxJmjvZaPoTUgAQ=='
-let proto = Protos['CMsgClientGetClientAppList']
+let proto = Protos['CClientComm_GetClientAppList_Request']
 let de = proto.decode(Buffer.from(data,'base64'))
 console.log(de)
-console.log(de.targetid.toString())
