@@ -105,7 +105,7 @@ export default class LoginApprover {
 		let signatureData = Buffer.alloc(2 + 8 + 8);
 		signatureData.writeUInt16LE(version, 0);
 		signatureData.writeBigUInt64LE(BigInt(clientId), 2);
-		signatureData.writeBigUInt64LE(BigInt(this.steamID), 10);
+		signatureData.writeBigUInt64LE(BigInt(this.steamID.accountid), 10);
 
 		let signature = createHmac('sha256', this._secretAsBuffer)
 			.update(signatureData)
