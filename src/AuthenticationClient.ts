@@ -1,16 +1,16 @@
-import createDebug from 'debug';
-import {EventEmitter} from 'events';
-import {hex2b64, Key as RSAKey} from 'node-bignumber';
-import {HttpClient} from '@doctormckay/stdlib/http';
+import createDebug from "debug";
+import { EventEmitter } from "events";
+import { hex2b64, Key as RSAKey } from "node-bignumber";
+import { HttpClient } from "@doctormckay/stdlib/http";
 
-import EAuthTokenPlatformType from './enums-steam/EAuthTokenPlatformType';
-import EResult from './enums-steam/EResult';
-import ETokenRenewalType from './enums-steam/ETokenRenewalType';
+import EAuthTokenPlatformType from "./enums-steam/EAuthTokenPlatformType";
+import EResult from "./enums-steam/EResult";
+import ETokenRenewalType from "./enums-steam/ETokenRenewalType";
 
-import {getProtoForMethod} from './protobufs';
-import ITransport, {ApiResponse} from './transports/ITransport';
+import { getProtoForMethod } from "./protobufs";
+import ITransport, { ApiResponse } from "./transports/ITransport";
 
-import {API_HEADERS, decodeJwt, eresultError, getDataForPlatformType, isJwtValidForAudience} from './helpers';
+import { API_HEADERS, decodeJwt, eresultError, getDataForPlatformType, isJwtValidForAudience } from "./helpers";
 import {
   CAuthentication_AccessToken_GenerateForApp_Request,
   CAuthentication_AccessToken_GenerateForApp_Response,
@@ -24,8 +24,8 @@ import {
   CAuthentication_PollAuthSessionStatus_Request,
   CAuthentication_PollAuthSessionStatus_Response,
   CAuthentication_UpdateAuthSessionWithMobileConfirmation_Request,
-  CAuthentication_UpdateAuthSessionWithSteamGuardCode_Request
-} from './protobuf-generated/types';
+  CAuthentication_UpdateAuthSessionWithSteamGuardCode_Request,
+} from "./protobuf-generated/types";
 import {
   CheckMachineAuthRequest,
   CheckMachineAuthResponse,
@@ -38,11 +38,11 @@ import {
   StartAuthSessionWithCredentialsRequest,
   StartAuthSessionWithCredentialsResponse,
   StartAuthSessionWithQrResponse,
-  SubmitSteamGuardCodeRequest
-} from './interfaces-internal';
-import {clearTimeout} from 'timers';
+  SubmitSteamGuardCodeRequest,
+} from "./interfaces-internal";
+import { clearTimeout } from "timers";
 
-const debug = createDebug('steam-session:AuthenticationClient');
+const debug = createDebug("steam-session:AuthenticationClient");
 
 interface RequestDefinition {
   method?: string;
@@ -69,19 +69,19 @@ export default class AuthenticationClient extends EventEmitter {
   }
 
   get transport() {
-    return this._transport
+    return this._transport;
   }
 
   async getRsaKey(accountName: string): Promise<CAuthentication_GetPasswordRSAPublicKey_Response> {
     return await this.sendRequest({
-      apiInterface: 'Authentication',
-      apiMethod: 'GetPasswordRSAPublicKey',
+      apiInterface: "Authentication",
+      apiMethod: "GetPasswordRSAPublicKey",
       apiVersion: 1,
-      data: {account_name: accountName}
+      data: { account_name: accountName },
     });
   }
 
-  async encryptPassword(accountName: string, password: string): Promise<{ encryptedPassword: string, keyTimestamp: string }> {
+  async encryptPassword(accountName: string, password: string): Promise<{ encryptedPassword: string; keyTimestamp: string }> {
     let rsaInfo = await this.getRsaKey(accountName);
 
     let key = new RSAKey();
@@ -89,12 +89,12 @@ export default class AuthenticationClient extends EventEmitter {
 
     return {
       encryptedPassword: hex2b64(key.encrypt(password)),
-      keyTimestamp: rsaInfo.timestamp
+      keyTimestamp: rsaInfo.timestamp,
     };
   }
 
   async startSessionWithCredentials(details: StartAuthSessionWithCredentialsRequest): Promise<StartAuthSessionWithCredentialsResponse> {
-    let {websiteId, deviceDetails} = getDataForPlatformType(details.platformType);
+    let { websiteId, deviceDetails } = getDataForPlatformType(details.platformType);
 
     let data: CAuthentication_BeginAuthSessionViaCredentials_Request_BinaryGuardData = {
       account_name: details.accountName,
@@ -102,7 +102,7 @@ export default class AuthenticationClient extends EventEmitter {
       encryption_timestamp: details.keyTimestamp,
       persistence: details.persistence,
       website_id: websiteId,
-      device_details: deviceDetails
+      device_details: deviceDetails,
     };
 
     if (details.platformType == EAuthTokenPlatformType.SteamClient) {
@@ -116,55 +116,55 @@ export default class AuthenticationClient extends EventEmitter {
     if (details.steamGuardMachineToken) {
       if (Buffer.isBuffer(details.steamGuardMachineToken)) {
         data.guard_data = details.steamGuardMachineToken;
-      } else if (typeof details.steamGuardMachineToken == 'string' && isJwtValidForAudience(details.steamGuardMachineToken, 'machine')) {
-        data.guard_data = Buffer.from(details.steamGuardMachineToken, 'utf8');
+      } else if (typeof details.steamGuardMachineToken == "string" && isJwtValidForAudience(details.steamGuardMachineToken, "machine")) {
+        data.guard_data = Buffer.from(details.steamGuardMachineToken, "utf8");
       }
     }
 
     let result: CAuthentication_BeginAuthSessionViaCredentials_Response = await this.sendRequest({
-      apiInterface: 'Authentication',
-      apiMethod: 'BeginAuthSessionViaCredentials',
+      apiInterface: "Authentication",
+      apiMethod: "BeginAuthSessionViaCredentials",
       apiVersion: 1,
-      data
+      data,
     });
 
     return {
       clientId: result.client_id,
       requestId: result.request_id,
       pollInterval: result.interval,
-      allowedConfirmations: result.allowed_confirmations.map(c => ({
+      allowedConfirmations: result.allowed_confirmations.map((c) => ({
         type: c.confirmation_type,
-        message: c.associated_message
+        message: c.associated_message,
       })),
       steamId: result.steamid,
-      weakToken: result.weak_token
+      weakToken: result.weak_token,
     };
   }
 
   async startSessionWithQR(details: StartAuthSessionRequest): Promise<StartAuthSessionWithQrResponse> {
-    let {deviceDetails} = getDataForPlatformType(details.platformType);
+    let { deviceDetails } = getDataForPlatformType(details.platformType);
 
     let data: CAuthentication_BeginAuthSessionViaQR_Request = {
-      device_details: deviceDetails
+      device_details: deviceDetails,
     };
 
     let result: CAuthentication_BeginAuthSessionViaQR_Response = await this.sendRequest({
-      apiInterface: 'Authentication',
-      apiMethod: 'BeginAuthSessionViaQR',
+      apiInterface: "Authentication",
+      apiMethod: "BeginAuthSessionViaQR",
       apiVersion: 1,
-      data
+      data,
     });
 
     return {
       clientId: result.client_id,
       requestId: result.request_id,
       pollInterval: result.interval,
-      allowedConfirmations: result.allowed_confirmations.map(c => ({
+      allowedConfirmations: result.allowed_confirmations.map((c) => ({
         type: c.confirmation_type,
-        message: c.associated_message
+        message: c.associated_message,
       })),
       challengeUrl: result.challenge_url,
-      version: result.version
+      version: result.version,
     };
   }
 
@@ -173,32 +173,32 @@ export default class AuthenticationClient extends EventEmitter {
       client_id: details.clientId,
       steamid: details.steamId,
       code: details.authCode,
-      code_type: details.authCodeType
+      code_type: details.authCodeType,
     };
 
     await this.sendRequest({
-      apiInterface: 'Authentication',
-      apiMethod: 'UpdateAuthSessionWithSteamGuardCode',
+      apiInterface: "Authentication",
+      apiMethod: "UpdateAuthSessionWithSteamGuardCode",
       apiVersion: 1,
-      data
+      data,
     });
   }
 
   async checkMachineAuthOrSendCodeEmail(details: CheckMachineAuthRequest): Promise<CheckMachineAuthResponse> {
-    let headers: any = Object.assign({'content-type': 'multipart/form-data'}, API_HEADERS);
+    let headers: any = Object.assign({ "content-type": "multipart/form-data" }, API_HEADERS);
 
     if (details.machineAuthToken) {
       headers.cookie = `steamMachineAuth${details.steamId}=${details.machineAuthToken}`;
     }
 
-    let body = {clientid: details.clientId, steamid: details.steamId};
-    debug('POST https://login.steampowered.com/jwt/checkdevice %o', body);
+    let body = { clientid: details.clientId, steamid: details.steamId };
+    debug("POST https://login.steampowered.com/jwt/checkdevice %o", body);
 
     let result = await this._webClient.request({
-      method: 'POST',
-      url: 'https://login.steampowered.com/jwt/checkdevice',
+      method: "POST",
+      url: "https://login.steampowered.com/jwt/checkdevice",
       multipartForm: HttpClient.simpleObjectToMultipartForm(body),
-      headers: API_HEADERS
+      headers: API_HEADERS,
     });
     return result.jsonBody as CheckMachineAuthResponse;
   }
@@ -206,16 +206,28 @@ export default class AuthenticationClient extends EventEmitter {
   async pollLoginStatus(details: PollLoginStatusRequest): Promise<PollLoginStatusResponse> {
     let data: CAuthentication_PollAuthSessionStatus_Request = {
       client_id: details.clientId,
-      request_id: details.requestId
+      request_id: details.requestId,
     };
 
     let result: CAuthentication_PollAuthSessionStatus_Response = await this.sendRequest({
-      apiInterface: 'Authentication',
-      apiMethod: 'PollAuthSessionStatus',
+      apiInterface: "Authentication",
+      apiMethod: "PollAuthSessionStatus",
       apiVersion: 1,
-      data
+      data,
     });
 
+    console.log("---------------------------------------------------");
+    console.log(details.clientId, details.requestId.toString("base64"));
+    console.log("---------------------------------------------------");
+    console.log("res===============", {
+      newClientId: result.new_client_id,
+      newChallengeUrl: result.new_challenge_url,
+      refreshToken: result.refresh_token,
+      accessToken: result.access_token,
+      hadRemoteInteraction: result.had_remote_interaction,
+      accountName: result.account_name,
+      newSteamGuardMachineAuth: result.new_guard_data,
+    });
     return {
       newClientId: result.new_client_id,
       newChallengeUrl: result.new_challenge_url,
@@ -223,21 +235,21 @@ export default class AuthenticationClient extends EventEmitter {
       accessToken: result.access_token,
       hadRemoteInteraction: result.had_remote_interaction,
       accountName: result.account_name,
-      newSteamGuardMachineAuth: result.new_guard_data
+      newSteamGuardMachineAuth: result.new_guard_data,
     };
   }
 
   async getAuthSessionInfo(accessToken: string, details: GetAuthSessionInfoRequest): Promise<GetAuthSessionInfoResponse> {
     let data: CAuthentication_GetAuthSessionInfo_Request = {
-      client_id: details.clientId
+      client_id: details.clientId,
     };
 
     let result: CAuthentication_GetAuthSessionInfo_Response = await this.sendRequest({
-      apiInterface: 'Authentication',
-      apiMethod: 'GetAuthSessionInfo',
+      apiInterface: "Authentication",
+      apiMethod: "GetAuthSessionInfo",
       apiVersion: 1,
       data,
-      accessToken
+      accessToken,
     });
 
     return {
@@ -251,7 +263,7 @@ export default class AuthenticationClient extends EventEmitter {
       loginHistory: result.login_history,
       locationMismatch: result.requestor_location_mismatch,
       highUsageLogin: result.high_usage_login,
-      requestedPersistence: result.requested_persistence
+      requestedPersistence: result.requested_persistence,
     };
   }
 
@@ -262,30 +274,30 @@ export default class AuthenticationClient extends EventEmitter {
       steamid: details.steamId,
       signature: details.signature,
       confirm: details.confirm,
-      persistence: details.persistence
+      persistence: details.persistence,
     };
 
     await this.sendRequest({
-      apiInterface: 'Authentication',
-      apiMethod: 'UpdateAuthSessionWithMobileConfirmation',
+      apiInterface: "Authentication",
+      apiMethod: "UpdateAuthSessionWithMobileConfirmation",
       apiVersion: 1,
       data,
-      accessToken
+      accessToken,
     });
   }
 
-  async generateAccessTokenForApp(refreshToken: string, renewRefreshToken = false): Promise<{ accessToken: string, refreshToken?: string }> {
+  async generateAccessTokenForApp(refreshToken: string, renewRefreshToken = false): Promise<{ accessToken: string; refreshToken?: string }> {
     let data: CAuthentication_AccessToken_GenerateForApp_Request = {
       refresh_token: refreshToken,
       steamid: decodeJwt(refreshToken).sub,
-      renewal_type: renewRefreshToken ? ETokenRenewalType.Allow : ETokenRenewalType.None
+      renewal_type: renewRefreshToken ? ETokenRenewalType.Allow : ETokenRenewalType.None,
     };
 
     let result: CAuthentication_AccessToken_GenerateForApp_Response = await this.sendRequest({
-      apiInterface: 'Authentication',
-      apiMethod: 'GenerateAccessTokenForApp',
+      apiInterface: "Authentication",
+      apiMethod: "GenerateAccessTokenForApp",
       apiVersion: 1,
-      data
+      data,
     });
 
     // We're done with the transport
@@ -293,7 +305,7 @@ export default class AuthenticationClient extends EventEmitter {
 
     return {
       accessToken: result.access_token,
-      refreshToken: result.refresh_token || null
+      refreshToken: result.refresh_token || null,
     };
   }
 
@@ -303,16 +315,18 @@ export default class AuthenticationClient extends EventEmitter {
 
     // Right now we really only support IAuthenticationService
 
-    let {
-      request: requestProto,
-      response: responseProto
-    } = getProtoForMethod(request.apiInterface, request.apiMethod, request.requestDefinitionName, request.responseDefinitionName);
+    let { request: requestProto, response: responseProto } = getProtoForMethod(
+      request.apiInterface,
+      request.apiMethod,
+      request.requestDefinitionName,
+      request.responseDefinitionName
+    );
     if (!requestProto || !responseProto) {
       throw new Error(`Unknown API method ${request.apiInterface}/${request.apiMethod}`);
     }
 
-    let {headers} = getDataForPlatformType(this._platformType);
-    this.emit('debug', request.apiMethod, request.data, headers);
+    let { headers } = getDataForPlatformType(this._platformType);
+    this.emit("debug", request.apiMethod, request.data, headers);
 
     let result: ApiResponse = await this._transport.sendRequest({
       method: request.method,
@@ -321,7 +335,7 @@ export default class AuthenticationClient extends EventEmitter {
       apiVersion: request.apiVersion,
       requestData: requestProto.encode(request.data).finish(),
       accessToken: request.accessToken,
-      headers
+      headers,
     });
 
     if (result.result != EResult.OK) {
@@ -330,12 +344,11 @@ export default class AuthenticationClient extends EventEmitter {
 
     // We need to decode the response data, if there was any
     if (result.responseData instanceof Buffer) {
-
       let responseData = result.responseData && result.responseData.length > 0 ? result.responseData : Buffer.alloc(0);
       let decodedData = responseProto.decode(responseData);
-      return responseProto.toObject(decodedData, {longs: String});
+      return responseProto.toObject(decodedData, { longs: String });
     } else {
-      return result.responseData
+      return result.responseData;
     }
   }
 
