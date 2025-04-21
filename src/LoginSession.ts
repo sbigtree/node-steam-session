@@ -278,7 +278,7 @@ export default class LoginSession extends EventEmitter {
     return await this._processStartSessionResponse();
   }
 
-  async startWithQR(param?: { noPoll: boolean }): Promise<StartSessionResponse> {
+  async startWithQR(param: { noPoll: boolean } = { noPoll: false }): Promise<StartSessionResponse> {
     if (this._startSessionResponse) {
       throw new Error("A session has already been started on this LoginSession object. Create a new LoginSession to start a new session.");
     }
@@ -292,7 +292,7 @@ export default class LoginSession extends EventEmitter {
     this.emit("debug", "start qr session response", this._startSessionResponse);
 
     return await this._processStartSessionResponse({
-      noPoll: param?.noPoll,
+      noPoll: param.noPoll,
     });
   }
 
@@ -300,7 +300,7 @@ export default class LoginSession extends EventEmitter {
     return await this._handler.pollLoginStatus(details);
   }
 
-  private async _processStartSessionResponse(param?: { noPoll: boolean }): Promise<StartSessionResponse> {
+  private async _processStartSessionResponse(param: { noPoll: boolean } = { noPoll: false }): Promise<StartSessionResponse> {
     this._pollingCanceled = param.noPoll || false;
 
     let validActions: StartSessionResponseValidAction[] = [];
@@ -387,7 +387,6 @@ export default class LoginSession extends EventEmitter {
   }
 
   private async _doPoll() {
-    this._pollingCanceled = true;
     if (this._pollingCanceled) {
       return;
     }
@@ -406,9 +405,6 @@ export default class LoginSession extends EventEmitter {
       this.cancelLoginAttempt();
       return;
     }
-    console.log("this._startSessionResponse", this._startSessionResponse);
-    console.log("this.loginTimeout", this.loginTimeout);
-    console.log("this._pollingCanceled", this._pollingCanceled);
 
     let pollResponse;
     try {

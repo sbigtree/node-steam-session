@@ -215,19 +215,6 @@ export default class AuthenticationClient extends EventEmitter {
       apiVersion: 1,
       data,
     });
-
-    console.log("---------------------------------------------------");
-    console.log(details.clientId, details.requestId.toString("base64"));
-    console.log("---------------------------------------------------");
-    console.log("res===============", {
-      newClientId: result.new_client_id,
-      newChallengeUrl: result.new_challenge_url,
-      refreshToken: result.refresh_token,
-      accessToken: result.access_token,
-      hadRemoteInteraction: result.had_remote_interaction,
-      accountName: result.account_name,
-      newSteamGuardMachineAuth: result.new_guard_data,
-    });
     return {
       newClientId: result.new_client_id,
       newChallengeUrl: result.new_challenge_url,
