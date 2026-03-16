@@ -38,13 +38,12 @@ export default class LoginApprover {
 		this._handler = new AuthenticationClient(EAuthTokenPlatformType.MobileApp, options.transport || new WebApiTransport(this._webClient), this._webClient);
 	}
 
-	get steamID(): SteamID {
+	get steamID(): SteamID | null {
 		if (this.accessToken) {
 			let decodedToken = decodeJwt(this.accessToken);
 			return new SteamID(decodedToken.sub);
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	get accessToken(): string { return this._accessToken; }
@@ -102,10 +101,15 @@ export default class LoginApprover {
 	async approveAuthSession(details: ApproveAuthSessionRequest): Promise<void> {
 		let {clientId, version} = decodeQrUrl(details.qrChallengeUrl);
 
+		const steamID = this.steamID;
+		if (!steamID) {
+			throw new Error('No steamID available (accessToken missing or invalid)');
+		}
+
 		let signatureData = Buffer.alloc(2 + 8 + 8);
 		signatureData.writeUInt16LE(version, 0);
 		signatureData.writeBigUInt64LE(BigInt(clientId), 2);
-		signatureData.writeBigUInt64LE(BigInt(this.steamID.accountid), 10);
+		signatureData.writeBigUInt64LE(BigInt(steamID.accountid), 10);
 
 		let signature = createHmac('sha256', this._secretAsBuffer)
 			.update(signatureData)
@@ -114,7 +118,7 @@ export default class LoginApprover {
 		await this._handler.submitMobileConfirmation(this.accessToken, {
 			version,
 			clientId,
-			steamId: this.steamID.getSteamID64(),
+			steamId: steamID.getSteamID64(),
 			signature,
 			confirm: details.approve,
 			persistence: details.persistence || ESessionPersistence.Persistent

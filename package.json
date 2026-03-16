@@ -17,7 +17,10 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/DoctorMcKay/node-steam-session.git"
+		"url": "https://github.com/sbigtree/node-steam-session.git"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/"
 	},
 	"main": "dist/index.js",
 	"files": [
@@ -26,7 +29,7 @@
 	],
 	"scripts": {
 		"prepare": "npm run build",
-		"prepublishOnly": "npm run lint && npm run test",
+		"prepublishOnly2": "npm run lint && npm run test",
 		"build": "node scripts/delete-dist.js && tsc --outDir dist",
 		"lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
 		"test": "jest",
